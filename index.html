@@ -185,6 +185,10 @@ tr:last-child td { border-bottom: none; }
         <label>Enter total firerate buff % (Leave empty for 0):</label>
         <input type="text" id="fr_b" autocomplete="off">
     </div>
+    <div class="form-group">
+        <label>Enter total damage buff % (Leave empty for 0):</label>
+        <input type="text" id="dmg_b" autocomplete="off">
+    </div>
     <button onclick="calculate()">CALCULATE</button>
 </div>
 
@@ -202,7 +206,7 @@ tr:last-child td { border-bottom: none; }
     <div class="table-container table-final">
         <table>
             <thead>
-                <tr><th colspan="3">FINAL PERFORMANCE</th></tr>
+                <tr><th colspan="3">FINAL PERFORMANCE (Buffed)</th></tr>
                 <tr><th>Metric</th><th class="right" style="color:#64748b;font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
             </thead>
             <tbody id="final-tbody"></tbody>
@@ -243,6 +247,7 @@ function calculate() {
     let b_fr_str = parseInput(document.getElementById('b_fr').value);
     let b_dmg_str = parseInput(document.getElementById('b_dmg').value);
     let fr_b_str = parseInput(document.getElementById('fr_b').value);
+    let dmg_b_str = parseInput(document.getElementById('dmg_b').value);
     
     if (!b_fr_str || !b_dmg_str) {
         document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
@@ -253,8 +258,9 @@ function calculate() {
     let b_fr = parseFloat(b_fr_str);
     let b_dmg = parseFloat(b_dmg_str);
     let fr_b = fr_b_str ? parseFloat(fr_b_str) : 0.0;
+    let dmg_b = dmg_b_str ? parseFloat(dmg_b_str) : 0.0;
     
-    if (isNaN(b_fr) || isNaN(b_dmg) || isNaN(fr_b)) {
+    if (isNaN(b_fr) || isNaN(b_dmg) || isNaN(fr_b) || isNaN(dmg_b)) {
         document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
         document.getElementById('error-msg').style.display = 'block';
         return;
@@ -268,15 +274,17 @@ function calculate() {
 
     let fr_i = b_fr / (1 + fr_b / 100);
     let sps_i = 1 / fr_i;
-    let dps_i = b_dmg * sps_i;
+    
+    let final_dmg = Math.floor(b_dmg * (1 + dmg_b / 100));
+    
+    let dps_i = final_dmg * sps_i;
     
     let final_frames = getRobloxFrames(fr_i);
     let fr_act = final_frames / 60;
     let sps_act = 1 / fr_act;
-    let dps_act = b_dmg * sps_act;
+    let dps_act = final_dmg * sps_act;
     
     let fr_inc_pct = 0;
-    
     if (b_sps_act > 0) {
         fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
     }
@@ -300,7 +308,9 @@ function calculate() {
         "<tr><td>DPS</td><td class='ideal'>" + dps_i.toFixed(2) + "</td><td class='actual'>" + dps_act.toFixed(2) + "</td></tr>";
 
     document.getElementById('analysis-tbody').innerHTML = 
-        "<tr><td>Buff Applied</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
+        "<tr><td>Firerate Buff</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
+        "<tr><td>Damage Buff</td><td class='right'>" + dmg_b.toFixed(1) + "%</td></tr>" +
+        "<tr><td>Buffed Damage</td><td class='right'>" + final_dmg + "</td></tr>" +
         "<tr><td>Real Firerate Increase</td><td class='right'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
         "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
 
