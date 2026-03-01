@@ -130,6 +130,12 @@
         width: 100%;
         animation: fadeIn 0.4s ease-out;
     }
+    
+    .buff-results {
+        display: none;
+        flex-direction: column;
+        gap: 20px;
+    }
 
     .table-container {
         margin-bottom: 20px;
@@ -138,6 +144,10 @@
         background: var(--bg-panel);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .table-container:last-child {
+        margin-bottom: 0;
     }
 
     table {
@@ -173,6 +183,8 @@
     }
 
     .table-base th { color: var(--accent-cyan); border-top: 3px solid var(--accent-cyan); }
+    .table-base td.ideal { color: var(--color-ideal); font-weight: normal; }
+    .table-base td.actual { color: var(--color-actual); font-weight: 800; font-size: 17px; }
     
     .table-final th { color: var(--color-actual); border-top: 3px solid var(--color-actual); }
     .table-final td.ideal { color: var(--color-ideal); font-weight: normal; }
@@ -227,31 +239,33 @@
         <div class="table-container table-base">
             <table>
                 <thead>
-                    <tr><th colspan="2">BASE STATS (No Buffs)</th></tr>
-                    <tr><th>Metric</th><th class="right">Value</th></tr>
+                    <tr><th colspan="3">BASE STATS (No Buffs)</th></tr>
+                    <tr><th>Metric</th><th class="right" style="color:var(--color-ideal);font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
                 </thead>
                 <tbody id="base-tbody"></tbody>
             </table>
         </div>
 
-        <div class="table-container table-final">
-            <table>
-                <thead>
-                    <tr><th colspan="3">FINAL PERFORMANCE</th></tr>
-                    <tr><th>Metric</th><th class="right" style="color:var(--color-ideal);font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
-                </thead>
-                <tbody id="final-tbody"></tbody>
-            </table>
-        </div>
+        <div id="buff-results-container" class="buff-results">
+            <div class="table-container table-final">
+                <table>
+                    <thead>
+                        <tr><th colspan="3">BUFF STATS</th></tr>
+                        <tr><th>Metric</th><th class="right" style="color:var(--color-ideal);font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
+                    </thead>
+                    <tbody id="final-tbody"></tbody>
+                </table>
+            </div>
 
-        <div class="table-container table-analysis">
-            <table>
-                <thead>
-                    <tr><th colspan="2">EFFECTIVENESS ANALYSIS</th></tr>
-                    <tr><th>Metric</th><th class="right">Value</th></tr>
-                </thead>
-                <tbody id="analysis-tbody"></tbody>
-            </table>
+            <div class="table-container table-analysis">
+                <table>
+                    <thead>
+                        <tr><th colspan="2">EFFECTIVENESS ANALYSIS</th></tr>
+                        <tr><th>Metric</th><th class="right">Value</th></tr>
+                    </thead>
+                    <tbody id="analysis-tbody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -276,6 +290,7 @@ function getRobloxFrames(seconds) {
 function calculate() {
     let err = document.getElementById('error-msg');
     let res = document.getElementById('results');
+    let buffRes = document.getElementById('buff-results-container');
     
     let b_fr_str = parseInput(document.getElementById('b_fr').value);
     let b_dmg_str = parseInput(document.getElementById('b_dmg').value);
@@ -306,42 +321,48 @@ function calculate() {
     let b_sps_act = 1 / b_fr_act;
     let b_dps_act = b_dmg * b_sps_act;
 
-    let fr_i = b_fr / (1 + fr_b / 100);
-    let sps_i = 1 / fr_i;
-    let dps_i = b_dmg * sps_i;
-    
-    let final_frames = getRobloxFrames(fr_i);
-    let fr_act = final_frames / 60;
-    let sps_act = 1 / fr_act;
-    let dps_act = b_dmg * sps_act;
-    
-    let fr_inc_pct = 0;
-    if (b_sps_act > 0) {
-        fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
-    }
-
-    let dps_loss = dps_i - dps_act;
-    let dps_loss_pct = 0;
-    if (dps_i > 0) {
-        dps_loss_pct = (dps_loss / dps_i) * 100;
-    }
+    let b_sps_i = 1 / b_fr;
 
     document.getElementById('base-tbody').innerHTML = 
-        "<tr><td>Base Firerate</td><td class='right mono'>" + b_fr.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Base Damage</td><td class='right mono'>" + b_dmg + "</td></tr>" +
-        "<tr><td>Ideal DPS</td><td class='right mono'>" + b_dps_i.toFixed(2) + "</td></tr>" +
-        "<tr><td>Actual Firerate</td><td class='right mono'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Actual DPS</td><td class='right mono'>" + b_dps_act.toFixed(2) + "</td></tr>";
+        "<tr><td>Firerate</td><td class='right ideal mono'>" + b_fr.toFixed(6) + "s</td><td class='right actual mono'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Shots/sec</td><td class='right ideal mono'>" + b_sps_i.toFixed(2) + "</td><td class='right actual mono'>" + b_sps_act.toFixed(2) + "</td></tr>" +
+        "<tr><td>DPS</td><td class='right ideal mono'>" + b_dps_i.toFixed(2) + "</td><td class='right actual mono'>" + b_dps_act.toFixed(2) + "</td></tr>";
 
-    document.getElementById('final-tbody').innerHTML = 
-        "<tr><td>Firerate</td><td class='right ideal mono'>" + fr_i.toFixed(6) + "s</td><td class='right actual mono'>" + fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Shots/sec</td><td class='right ideal mono'>" + sps_i.toFixed(2) + "</td><td class='right actual mono'>" + sps_act.toFixed(2) + "</td></tr>" +
-        "<tr><td>DPS</td><td class='right ideal mono'>" + dps_i.toFixed(2) + "</td><td class='right actual mono'>" + dps_act.toFixed(2) + "</td></tr>";
+    if (fr_b > 0) {
+        let fr_i = b_fr / (1 + fr_b / 100);
+        let sps_i = 1 / fr_i;
+        let dps_i = b_dmg * sps_i;
+        
+        let final_frames = getRobloxFrames(fr_i);
+        let fr_act = final_frames / 60;
+        let sps_act = 1 / fr_act;
+        let dps_act = b_dmg * sps_act;
+        
+        let fr_inc_pct = 0;
+        if (b_sps_act > 0) {
+            fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
+        }
 
-    document.getElementById('analysis-tbody').innerHTML = 
-        "<tr><td>Buff Applied</td><td class='right mono'>" + fr_b.toFixed(1) + "%</td></tr>" +
-        "<tr><td>Real Firerate Increase</td><td class='right mono'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
-        "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value mono'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
+        let dps_loss = dps_i - dps_act;
+        let dps_loss_pct = 0;
+        if (dps_i > 0) {
+            dps_loss_pct = (dps_loss / dps_i) * 100;
+        }
+
+        document.getElementById('final-tbody').innerHTML = 
+            "<tr><td>Firerate</td><td class='right ideal mono'>" + fr_i.toFixed(6) + "s</td><td class='right actual mono'>" + fr_act.toFixed(6) + "s</td></tr>" +
+            "<tr><td>Shots/sec</td><td class='right ideal mono'>" + sps_i.toFixed(2) + "</td><td class='right actual mono'>" + sps_act.toFixed(2) + "</td></tr>" +
+            "<tr><td>DPS</td><td class='right ideal mono'>" + dps_i.toFixed(2) + "</td><td class='right actual mono'>" + dps_act.toFixed(2) + "</td></tr>";
+
+        document.getElementById('analysis-tbody').innerHTML = 
+            "<tr><td>Buff Applied</td><td class='right mono'>" + fr_b.toFixed(1) + "%</td></tr>" +
+            "<tr><td>Real Firerate Increase</td><td class='right mono'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
+            "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value mono'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
+
+        buffRes.style.display = 'flex';
+    } else {
+        buffRes.style.display = 'none';
+    }
 
     res.style.display = 'block';
 }
