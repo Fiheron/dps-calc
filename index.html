@@ -4,219 +4,246 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TDS ROF Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-body {
-    background-color: #12141a;
-    color: #e2e8f0;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 40px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.header {
-    text-align: center;
-    background: #1e212b;
-    border: 1px solid #2cf2ed;
-    box-shadow: 0 8px 32px rgba(44, 242, 237, 0.15);
-    padding: 25px 50px;
-    border-radius: 12px;
-    margin-bottom: 40px;
-}
-.header h1 {
-    color: #2cf2ed;
-    margin: 0 0 8px 0;
-    font-size: 28px;
-    letter-spacing: 1px;
-}
-.header p {
-    color: #94a3b8;
-    margin: 0;
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-.input-section {
-    background: #1e212b;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    width: 100%;
-    max-width: 420px;
-    margin-bottom: 40px;
-}
-.form-group {
-    margin-bottom: 20px;
-}
-.form-group label {
-    display: block;
-    color: #2cf2ed;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-.form-group input {
-    width: 100%;
-    padding: 12px 15px;
-    background: #12141a;
-    border: 1px solid #334155;
-    border-radius: 6px;
-    color: #fff;
-    font-family: 'Consolas', monospace;
-    font-size: 16px;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-}
-.form-group input:focus {
-    border-color: #2cf2ed;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(44, 242, 237, 0.2);
-}
-button {
-    width: 100%;
-    padding: 14px;
-    background-color: #2cf2ed;
-    color: #0f172a;
-    border: none;
-    font-weight: 700;
-    font-size: 16px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-button:hover {
-    background-color: #1ce0db;
-    box-shadow: 0 4px 15px rgba(44, 242, 237, 0.4);
-    transform: translateY(-1px);
-}
-button:active {
-    transform: translateY(1px);
-}
-.results-section {
-    display: none;
-    width: 100%;
-    max-width: 540px;
-}
-.table-container {
-    margin-bottom: 30px;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #1e212b;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-th, td {
-    padding: 14px 20px;
-    text-align: left;
-    border-bottom: 1px solid #2a3142;
-    border-right: 1px solid #2a3142;
-}
-th:last-child, td:last-child {
-    border-right: none;
-}
-th {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-td {
-    font-family: 'Consolas', monospace;
-    font-size: 15px;
-}
-td.right {
-    text-align: right;
-    font-weight: bold;
-}
-tbody tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.02);
-}
-.table-base { border-top: 4px solid #2cf2ed; }
-.table-base th { background: rgba(44, 242, 237, 0.1); color: #2cf2ed; }
-.table-base td.right { color: #f8fafc; }
+    :root {
+        --bg-main: #0f172a;
+        --bg-panel: #1e293b;
+        --bg-input: #0f172a;
+        --accent-cyan: #06b6d4;
+        --accent-cyan-glow: rgba(6, 182, 212, 0.3);
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --color-ideal: #cbd5e1;
+        --color-actual: #10b981;
+        --color-loss: #f43f5e;
+        --color-warning: #eab308;
+    }
 
-.table-final { border-top: 4px solid #4ade80; }
-.table-final th { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
-.table-final td.ideal { color: #64748b; font-weight: normal; text-align: right; }
-.table-final td.actual { color: #4ade80; text-align: right; font-weight: bold; font-size: 16px; }
+    body {
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+    }
 
-.table-analysis { border-top: 4px solid #facc15; }
-.table-analysis th { background: rgba(250, 204, 21, 0.1); color: #facc15; }
-.table-analysis td { color: #fde047; }
-.table-analysis td.loss-value { color: #fca5a5; }
+    .header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeInDown 0.6s ease-out;
+    }
 
-tr:last-child td { border-bottom: none; }
+    .header h1 {
+        color: var(--text-main);
+        margin: 0 0 8px 0;
+        font-size: 36px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        text-shadow: 0 0 20px var(--accent-cyan-glow);
+    }
+    
+    .header h1 span {
+        color: var(--accent-cyan);
+    }
 
-.error {
-    color: #f87171;
-    font-weight: 600;
-    margin-bottom: 20px;
-    display: none;
-    text-align: center;
-    border: 1px solid rgba(248, 113, 113, 0.3);
-    padding: 12px;
-    background: rgba(248, 113, 113, 0.1);
-    border-radius: 6px;
-}
+    .header p {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-weight: 600;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        width: 100%;
+        max-width: 540px;
+    }
+
+    .input-section {
+        background: var(--bg-panel);
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--bg-input);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+    }
+
+    .form-group input:focus {
+        border-color: var(--accent-cyan);
+        outline: none;
+        box-shadow: 0 0 0 4px var(--accent-cyan-glow);
+    }
+
+    .results-section {
+        display: none;
+        width: 100%;
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .table-container {
+        margin-bottom: 20px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--bg-panel);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 16px 20px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    th {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 800;
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    td {
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    td.right, th.right {
+        text-align: right;
+    }
+
+    td.mono {
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .table-base th { color: var(--accent-cyan); border-top: 3px solid var(--accent-cyan); }
+    
+    .table-final th { color: var(--color-actual); border-top: 3px solid var(--color-actual); }
+    .table-final td.ideal { color: var(--color-ideal); font-weight: normal; }
+    .table-final td.actual { color: var(--color-actual); font-weight: 800; font-size: 17px; }
+
+    .table-analysis th { color: var(--color-warning); border-top: 3px solid var(--color-warning); }
+    .table-analysis td.loss-value { color: var(--color-loss); font-weight: 800; }
+
+    .error {
+        color: var(--color-loss);
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: none;
+        text-align: center;
+        border: 1px solid rgba(244, 63, 94, 0.3);
+        padding: 14px;
+        background: rgba(244, 63, 94, 0.1);
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>TDS ROF CALCULATOR</h1>
-    <p>Firerate & DPS Analyzer</p>
+    <h1>TDS <span>ROF</span> CALCULATOR</h1>
+    <p>Live Firerate & DPS Analyzer</p>
 </div>
 
-<div class="input-section">
-    <div id="error-msg" class="error"></div>
-    <div class="form-group">
-        <label>Enter base firerate:</label>
-        <input type="text" id="b_fr" autocomplete="off">
-    </div>
-    <div class="form-group">
-        <label>Enter base damage per shot:</label>
-        <input type="text" id="b_dmg" autocomplete="off">
-    </div>
-    <div class="form-group">
-        <label>Enter total firerate buff % (Leave empty for 0):</label>
-        <input type="text" id="fr_b" autocomplete="off">
-    </div>
-    <button onclick="calculate()">CALCULATE</button>
-</div>
-
-<div class="results-section" id="results">
-    <div class="table-container table-base">
-        <table>
-            <thead>
-                <tr><th colspan="2">BASE STATS (No Buffs)</th></tr>
-                <tr><th>Metric</th><th class="right">Value</th></tr>
-            </thead>
-            <tbody id="base-tbody"></tbody>
-        </table>
+<div class="container">
+    <div class="input-section">
+        <div id="error-msg" class="error"></div>
+        <div class="form-group">
+            <label>Base Firerate (Seconds)</label>
+            <input type="number" id="b_fr" autocomplete="off" placeholder="e.g. 0.1">
+        </div>
+        <div class="form-group">
+            <label>Base Damage Per Shot</label>
+            <input type="number" id="b_dmg" autocomplete="off" placeholder="e.g. 20">
+        </div>
+        <div class="form-group">
+            <label>Total Firerate Buff % (Optional)</label>
+            <input type="number" id="fr_b" autocomplete="off" placeholder="e.g. 50">
+        </div>
     </div>
 
-    <div class="table-container table-final">
-        <table>
-            <thead>
-                <tr><th colspan="3">FINAL PERFORMANCE</th></tr>
-                <tr><th>Metric</th><th class="right" style="color:#64748b;font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
-            </thead>
-            <tbody id="final-tbody"></tbody>
-        </table>
-    </div>
+    <div class="results-section" id="results">
+        <div class="table-container table-base">
+            <table>
+                <thead>
+                    <tr><th colspan="2">BASE STATS (No Buffs)</th></tr>
+                    <tr><th>Metric</th><th class="right">Value</th></tr>
+                </thead>
+                <tbody id="base-tbody"></tbody>
+            </table>
+        </div>
 
-    <div class="table-container table-analysis">
-        <table>
-            <thead>
-                <tr><th colspan="2">ANALYSIS</th></tr>
-                <tr><th>Effectiveness Metric</th><th class="right">Value</th></tr>
-            </thead>
-            <tbody id="analysis-tbody"></tbody>
-        </table>
+        <div class="table-container table-final">
+            <table>
+                <thead>
+                    <tr><th colspan="3">FINAL PERFORMANCE</th></tr>
+                    <tr><th>Metric</th><th class="right" style="color:var(--color-ideal);font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
+                </thead>
+                <tbody id="final-tbody"></tbody>
+            </table>
+        </div>
+
+        <div class="table-container table-analysis">
+            <table>
+                <thead>
+                    <tr><th colspan="2">EFFECTIVENESS ANALYSIS</th></tr>
+                    <tr><th>Metric</th><th class="right">Value</th></tr>
+                </thead>
+                <tbody id="analysis-tbody"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -238,15 +265,16 @@ function getRobloxFrames(seconds) {
 }
 
 function calculate() {
-    document.getElementById('error-msg').style.display = 'none';
+    let err = document.getElementById('error-msg');
+    let res = document.getElementById('results');
     
     let b_fr_str = parseInput(document.getElementById('b_fr').value);
     let b_dmg_str = parseInput(document.getElementById('b_dmg').value);
     let fr_b_str = parseInput(document.getElementById('fr_b').value);
     
     if (!b_fr_str || !b_dmg_str) {
-        document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
-        document.getElementById('error-msg').style.display = 'block';
+        err.style.display = 'none';
+        res.style.display = 'none';
         return;
     }
     
@@ -254,11 +282,14 @@ function calculate() {
     let b_dmg = parseFloat(b_dmg_str);
     let fr_b = fr_b_str ? parseFloat(fr_b_str) : 0.0;
     
-    if (isNaN(b_fr) || isNaN(b_dmg) || isNaN(fr_b)) {
-        document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
-        document.getElementById('error-msg').style.display = 'block';
+    if (isNaN(b_fr) || isNaN(b_dmg) || isNaN(fr_b) || b_fr <= 0 || b_dmg < 0) {
+        err.innerText = "Please enter valid positive numbers.";
+        err.style.display = 'block';
+        res.style.display = 'none';
         return;
     }
+    
+    err.style.display = 'none';
 
     let b_dps_i = b_dmg / b_fr;
     let b_frames = getRobloxFrames(b_fr);
@@ -276,7 +307,6 @@ function calculate() {
     let dps_act = b_dmg * sps_act;
     
     let fr_inc_pct = 0;
-    
     if (b_sps_act > 0) {
         fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
     }
@@ -288,30 +318,29 @@ function calculate() {
     }
 
     document.getElementById('base-tbody').innerHTML = 
-        "<tr><td>Base Firerate</td><td class='right'>" + b_fr.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Base Damage</td><td class='right'>" + b_dmg + "</td></tr>" +
-        "<tr><td>Ideal DPS</td><td class='right'>" + b_dps_i.toFixed(2) + "</td></tr>" +
-        "<tr><td>Actual Firerate</td><td class='right'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Actual DPS</td><td class='right'>" + b_dps_act.toFixed(2) + "</td></tr>";
+        "<tr><td>Base Firerate</td><td class='right mono'>" + b_fr.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Base Damage</td><td class='right mono'>" + b_dmg + "</td></tr>" +
+        "<tr><td>Ideal DPS</td><td class='right mono'>" + b_dps_i.toFixed(2) + "</td></tr>" +
+        "<tr><td>Actual Firerate</td><td class='right mono'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Actual DPS</td><td class='right mono'>" + b_dps_act.toFixed(2) + "</td></tr>";
 
     document.getElementById('final-tbody').innerHTML = 
-        "<tr><td>Firerate</td><td class='ideal'>" + fr_i.toFixed(6) + "s</td><td class='actual'>" + fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Shots/sec</td><td class='ideal'>" + sps_i.toFixed(2) + "</td><td class='actual'>" + sps_act.toFixed(2) + "</td></tr>" +
-        "<tr><td>DPS</td><td class='ideal'>" + dps_i.toFixed(2) + "</td><td class='actual'>" + dps_act.toFixed(2) + "</td></tr>";
+        "<tr><td>Firerate</td><td class='right ideal mono'>" + fr_i.toFixed(6) + "s</td><td class='right actual mono'>" + fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Shots/sec</td><td class='right ideal mono'>" + sps_i.toFixed(2) + "</td><td class='right actual mono'>" + sps_act.toFixed(2) + "</td></tr>" +
+        "<tr><td>DPS</td><td class='right ideal mono'>" + dps_i.toFixed(2) + "</td><td class='right actual mono'>" + dps_act.toFixed(2) + "</td></tr>";
 
     document.getElementById('analysis-tbody').innerHTML = 
-        "<tr><td>Buff Applied</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
-        "<tr><td>Real Firerate Increase</td><td class='right'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
-        "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
+        "<tr><td>Buff Applied</td><td class='right mono'>" + fr_b.toFixed(1) + "%</td></tr>" +
+        "<tr><td>Real Firerate Increase</td><td class='right mono'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
+        "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value mono'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
 
-    document.getElementById('results').style.display = 'block';
+    res.style.display = 'block';
 }
 
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Enter") {
-        calculate();
-    }
-});
+document.getElementById('b_fr').addEventListener('input', calculate);
+document.getElementById('b_dmg').addEventListener('input', calculate);
+document.getElementById('fr_b').addEventListener('input', calculate);
+
 </script>
 </body>
 </html>
