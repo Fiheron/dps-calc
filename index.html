@@ -114,6 +114,10 @@ th, td {
     padding: 14px 20px;
     text-align: left;
     border-bottom: 1px solid #2a3142;
+    border-right: 1px solid #2a3142;
+}
+th:last-child, td:last-child {
+    border-right: none;
 }
 th {
     font-size: 13px;
@@ -127,6 +131,9 @@ td {
 td.right {
     text-align: right;
     font-weight: bold;
+}
+tbody tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.02);
 }
 .table-base { border-top: 4px solid #2cf2ed; }
 .table-base th { background: rgba(44, 242, 237, 0.1); color: #2cf2ed; }
