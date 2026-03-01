@@ -97,7 +97,7 @@ button:active {
 .results-section {
     display: none;
     width: 100%;
-    max-width: 540px;
+    max-width: 700px;
 }
 .table-container {
     margin-bottom: 30px;
@@ -111,7 +111,7 @@ table {
     border-collapse: collapse;
 }
 th, td {
-    padding: 14px 20px;
+    padding: 14px 15px;
     text-align: left;
     border-bottom: 1px solid #2a3142;
     border-right: 1px solid #2a3142;
@@ -120,9 +120,9 @@ th:last-child, td:last-child {
     border-right: none;
 }
 th {
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 td {
     font-family: 'Consolas', monospace;
@@ -142,6 +142,7 @@ tbody tr:nth-child(even) {
 .table-final { border-top: 4px solid #4ade80; }
 .table-final th { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
 .table-final td.ideal { color: #64748b; font-weight: normal; text-align: right; }
+.table-final td.base-dmg { color: #94a3b8; text-align: right; font-weight: bold; }
 .table-final td.actual { color: #4ade80; text-align: right; font-weight: bold; font-size: 16px; }
 
 .table-analysis { border-top: 4px solid #facc15; }
@@ -206,8 +207,13 @@ tr:last-child td { border-bottom: none; }
     <div class="table-container table-final">
         <table>
             <thead>
-                <tr><th colspan="3">FINAL PERFORMANCE (Buffed)</th></tr>
-                <tr><th>Metric</th><th class="right" style="color:#64748b;font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
+                <tr><th colspan="4">FINAL PERFORMANCE COMPARISON</th></tr>
+                <tr>
+                    <th>Metric</th>
+                    <th class="right" style="color:#64748b;">IDEAL<br><span style="font-size:10px;font-weight:normal">(Full Buffs)</span></th>
+                    <th class="right" style="color:#94a3b8;">ACTUAL<br><span style="font-size:10px;font-weight:normal">(Base Dmg)</span></th>
+                    <th class="right" style="color:#4ade80;">ACTUAL<br><span style="font-size:10px;font-weight:normal">(Final)</span></th>
+                </tr>
             </thead>
             <tbody id="final-tbody"></tbody>
         </table>
@@ -277,27 +283,29 @@ function calculate() {
     
     let final_dmg = Math.floor(b_dmg * (1 + dmg_b / 100));
     
-    let dps_i = final_dmg * sps_i;
+    let dps_i_full = final_dmg * sps_i;
     
     let final_frames = getRobloxFrames(fr_i);
     let fr_act = final_frames / 60;
     let sps_act = 1 / fr_act;
-    let dps_act = final_dmg * sps_act;
+    
+    let dps_act_base_dmg = b_dmg * sps_act;
+    let dps_act_final = final_dmg * sps_act;
     
     let fr_inc_pct = 0;
     if (b_sps_act > 0) {
         fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
     }
 
-    let dps_loss = dps_i - dps_act;
+    let dps_loss = dps_i_full - dps_act_final;
     let dps_loss_pct = 0;
-    if (dps_i > 0) {
-        dps_loss_pct = (dps_loss / dps_i) * 100;
+    if (dps_i_full > 0) {
+        dps_loss_pct = (dps_loss / dps_i_full) * 100;
     }
 
     let total_dps_inc = 0;
     if (b_dps_act > 0) {
-        total_dps_inc = ((dps_act - b_dps_act) / b_dps_act) * 100;
+        total_dps_inc = ((dps_act_final - b_dps_act) / b_dps_act) * 100;
     }
 
     document.getElementById('base-tbody').innerHTML = 
@@ -308,14 +316,13 @@ function calculate() {
         "<tr><td>Actual DPS</td><td class='right'>" + b_dps_act.toFixed(2) + "</td></tr>";
 
     document.getElementById('final-tbody').innerHTML = 
-        "<tr><td>Firerate</td><td class='ideal'>" + fr_i.toFixed(6) + "s</td><td class='actual'>" + fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Shots/sec</td><td class='ideal'>" + sps_i.toFixed(2) + "</td><td class='actual'>" + sps_act.toFixed(2) + "</td></tr>" +
-        "<tr><td>DPS</td><td class='ideal'>" + dps_i.toFixed(2) + "</td><td class='actual'>" + dps_act.toFixed(2) + "</td></tr>";
+        "<tr><td>Firerate</td><td class='ideal'>" + fr_i.toFixed(6) + "s</td><td class='base-dmg'>" + fr_act.toFixed(6) + "s</td><td class='actual'>" + fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Damage</td><td class='ideal'>" + final_dmg + "</td><td class='base-dmg'>" + b_dmg + "</td><td class='actual'>" + final_dmg + "</td></tr>" +
+        "<tr><td>DPS</td><td class='ideal'>" + dps_i_full.toFixed(2) + "</td><td class='base-dmg'>" + dps_act_base_dmg.toFixed(2) + "</td><td class='actual'>" + dps_act_final.toFixed(2) + "</td></tr>";
 
     document.getElementById('analysis-tbody').innerHTML = 
         "<tr><td>Firerate Buff</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
         "<tr><td>Damage Buff</td><td class='right'>" + dmg_b.toFixed(1) + "%</td></tr>" +
-        "<tr><td>Buffed Damage</td><td class='right'>" + final_dmg + "</td></tr>" +
         "<tr><td>Real Firerate Increase</td><td class='right'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
         "<tr><td>Total Actual DPS Increase</td><td class='right'>" + total_dps_inc.toFixed(2) + "%</td></tr>" +
         "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
