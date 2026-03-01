@@ -1,1 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TDS ROF Calculator</title>
+<style>
+body {
+    background-color: #0c0c0c;
+    color: #e0e0e0;
+    font-family: 'Consolas', 'Courier New', monospace;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.header {
+    text-align: center;
+    border: 2px solid #00ffff;
+    padding: 20px 40px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+.header h1 {
+    color: #00ffff;
+    margin: 0 0 10px 0;
+}
+.header p {
+    color: #888;
+    margin: 0;
+}
+.input-section {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 30px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    color: #00ffff;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    background: #000;
+    border: 1px solid #444;
+    color: #fff;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #00ffff;
+    color: #000;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 16px;
+    border-radius: 4px;
+}
+button:hover {
+    background-color: #00cccc;
+}
+.results-section {
+    display: none;
+    width: 100%;
+    max-width: 500px;
+}
+.table-container {
+    margin-bottom: 25px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #111;
+}
+th, td {
+    padding: 10px 15px;
+    text-align: left;
+    border: 1px solid #222;
+}
+th {
+    text-transform: uppercase;
+}
+td.right {
+    text-align: right;
+    font-weight: bold;
+}
+.table-base {
+    border: 2px solid #00ffff;
+}
+.table-base th {
+    background: #002222;
+    color: #00ffff;
+    border-bottom: 2px solid #00ffff;
+}
+.table-base td.right {
+    color: #fff;
+}
+.table-final {
+    border: 2px solid #00ff00;
+}
+.table-final th {
+    background: #002200;
+    color: #00ff00;
+    border-bottom: 2px solid #00ff00;
+}
+.table-final td.ideal {
+    color: #888;
+    font-weight: normal;
+    text-align: right;
+}
+.table-final td.actual {
+    color: #00ff00;
+    text-align: right;
+    font-weight: bold;
+}
+.table-analysis {
+    border: 2px solid #ffff00;
+}
+.table-analysis th {
+    background: #222200;
+    color: #ffff00;
+    border-bottom: 2px solid #ffff00;
+}
+.table-analysis td {
+    color: #ffff00;
+}
+.error {
+    color: #ff4444;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: none;
+    text-align: center;
+    border: 1px solid #ff4444;
+    padding: 10px;
+    background: #330000;
+    border-radius: 4px;
+}
+</style>
+</head>
+<body>
 
+<div class="header">
+    <h1>TDS ROF CALCULATOR</h1>
+    <p>Firerate & DPS Analyzer</p>
+</div>
+
+<div class="input-section">
+    <div id="error-msg" class="error"></div>
+    <div class="form-group">
+        <label>Enter base firerate:</label>
+        <input type="text" id="b_fr" autocomplete="off">
+    </div>
+    <div class="form-group">
+        <label>Enter base damage per shot:</label>
+        <input type="text" id="b_dmg" autocomplete="off">
+    </div>
+    <div class="form-group">
+        <label>Enter total firerate buff % (Leave empty for 0):</label>
+        <input type="text" id="fr_b" autocomplete="off">
+    </div>
+    <button onclick="calculate()">CALCULATE</button>
+</div>
+
+<div class="results-section" id="results">
+    <div class="table-container table-base">
+        <table>
+            <thead>
+                <tr><th colspan="2">BASE STATS (No Buffs)</th></tr>
+                <tr><th>Metric</th><th class="right">Value</th></tr>
+            </thead>
+            <tbody id="base-tbody"></tbody>
+        </table>
+    </div>
+
+    <div class="table-container table-final">
+        <table>
+            <thead>
+                <tr><th colspan="3">FINAL PERFORMANCE</th></tr>
+                <tr><th>Metric</th><th class="right" style="color:#888;font-weight:normal;">IDEAL</th><th class="right">ACTUAL</th></tr>
+            </thead>
+            <tbody id="final-tbody"></tbody>
+        </table>
+    </div>
+
+    <div class="table-container table-analysis">
+        <table>
+            <thead>
+                <tr><th colspan="2">ANALYSIS</th></tr>
+                <tr><th>Effectiveness Metric</th><th class="right">Value</th></tr>
+            </thead>
+            <tbody id="analysis-tbody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function parseInput(val) {
+    if (!val) return "";
+    return val.replace(',', '.');
+}
+
+function getRobloxFrames(seconds) {
+    const EPSILON = 1e-9;
+    let raw_frames = seconds * 60;
+    
+    if (Math.abs(raw_frames - Math.round(raw_frames)) < EPSILON) {
+        return Math.round(raw_frames) + 1.5;
+    } else {
+        return Math.ceil(raw_frames) + 1;
+    }
+}
+
+function calculate() {
+    document.getElementById('error-msg').style.display = 'none';
+    
+    let b_fr_str = parseInput(document.getElementById('b_fr').value);
+    let b_dmg_str = parseInput(document.getElementById('b_dmg').value);
+    let fr_b_str = parseInput(document.getElementById('fr_b').value);
+    
+    if (!b_fr_str || !b_dmg_str) {
+        document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
+        document.getElementById('error-msg').style.display = 'block';
+        return;
+    }
+    
+    let b_fr = parseFloat(b_fr_str);
+    let b_dmg = parseFloat(b_dmg_str);
+    let fr_b = fr_b_str ? parseFloat(fr_b_str) : 0.0;
+    
+    if (isNaN(b_fr) || isNaN(b_dmg) || isNaN(fr_b)) {
+        document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
+        document.getElementById('error-msg').style.display = 'block';
+        return;
+    }
+
+    let b_dps_i = b_dmg / b_fr;
+    let b_frames = getRobloxFrames(b_fr);
+    let b_fr_act = b_frames / 60;
+    let b_sps_act = 1 / b_fr_act;
+    let b_dps_act = b_dmg * b_sps_act;
+
+    let fr_i = b_fr / (1 + fr_b / 100);
+    let sps_i = 1 / fr_i;
+    let dps_i = b_dmg * sps_i;
+    
+    let final_frames = getRobloxFrames(fr_i);
+    let fr_act = final_frames / 60;
+    let sps_act = 1 / fr_act;
+    let dps_act = b_dmg * sps_act;
+    
+    let fr_inc_pct = 0;
+    let dps_inc_pct = 0;
+    
+    if (b_sps_act > 0) {
+        fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
+        dps_inc_pct = ((dps_act - b_dps_act) / b_dps_act) * 100;
+    }
+
+    document.getElementById('base-tbody').innerHTML = 
+        "<tr><td>Base Firerate</td><td class='right'>" + b_fr.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Base Damage</td><td class='right'>" + b_dmg + "</td></tr>" +
+        "<tr><td>Ideal DPS</td><td class='right'>" + b_dps_i.toFixed(2) + "</td></tr>" +
+        "<tr><td>Actual Firerate</td><td class='right'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Actual DPS</td><td class='right'>" + b_dps_act.toFixed(2) + "</td></tr>";
+
+    document.getElementById('final-tbody').innerHTML = 
+        "<tr><td>Firerate</td><td class='ideal'>" + fr_i.toFixed(6) + "s</td><td class='actual'>" + fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Shots/sec</td><td class='ideal'>" + sps_i.toFixed(2) + "</td><td class='actual'>" + sps_act.toFixed(2) + "</td></tr>" +
+        "<tr><td>DPS</td><td class='ideal'>" + dps_i.toFixed(2) + "</td><td class='actual'>" + dps_act.toFixed(2) + "</td></tr>";
+
+    document.getElementById('analysis-tbody').innerHTML = 
+        "<tr><td>Buff Applied</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
+        "<tr><td>Real Firerate Inc.</td><td class='right'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
+        "<tr><td>Real DPS Inc.</td><td class='right'>" + dps_inc_pct.toFixed(2) + "%</td></tr>";
+
+    document.getElementById('results').style.display = 'block';
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        calculate();
+    }
+});
+</script>
+</body>
+</html>
