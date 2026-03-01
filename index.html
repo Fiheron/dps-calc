@@ -140,6 +140,7 @@ td.right {
 .table-analysis { border-top: 4px solid #facc15; }
 .table-analysis th { background: rgba(250, 204, 21, 0.1); color: #facc15; }
 .table-analysis td { color: #fde047; }
+.table-analysis td.loss-value { color: #fca5a5; }
 
 tr:last-child td { border-bottom: none; }
 
@@ -275,6 +276,12 @@ function calculate() {
         dps_inc_pct = ((dps_act - b_dps_act) / b_dps_act) * 100;
     }
 
+    let dps_loss = dps_i - dps_act;
+    let dps_loss_pct = 0;
+    if (dps_i > 0) {
+        dps_loss_pct = (dps_loss / dps_i) * 100;
+    }
+
     document.getElementById('base-tbody').innerHTML = 
         "<tr><td>Base Firerate</td><td class='right'>" + b_fr.toFixed(6) + "s</td></tr>" +
         "<tr><td>Base Damage</td><td class='right'>" + b_dmg + "</td></tr>" +
@@ -290,7 +297,8 @@ function calculate() {
     document.getElementById('analysis-tbody').innerHTML = 
         "<tr><td>Buff Applied</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
         "<tr><td>Real Firerate Increase</td><td class='right'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
-        "<tr><td>Real DPS Increase</td><td class='right'>" + dps_inc_pct.toFixed(2) + "%</td></tr>";
+        "<tr><td>Real DPS Increase</td><td class='right'>" + dps_inc_pct.toFixed(2) + "%</td></tr>" +
+        "<tr><td>DPS Loss vs Ideal</td><td class='right loss-value'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
 
     document.getElementById('results').style.display = 'block';
 }
