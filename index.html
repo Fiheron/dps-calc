@@ -6,7 +6,7 @@
 <title>TDS ROF Calculator</title>
 <style>
 body {
-    background-color: #12141a;
+    background-color: #0f1115;
     color: #e2e8f0;
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
@@ -17,9 +17,9 @@ body {
 }
 .header {
     text-align: center;
-    background: #1e212b;
+    background: #181b21;
     border: 1px solid #2cf2ed;
-    box-shadow: 0 8px 32px rgba(44, 242, 237, 0.15);
+    box-shadow: 0 0 20px rgba(44, 242, 237, 0.1);
     padding: 25px 50px;
     border-radius: 12px;
     margin-bottom: 40px;
@@ -29,19 +29,20 @@ body {
     margin: 0 0 8px 0;
     font-size: 28px;
     letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(44, 242, 237, 0.3);
 }
 .header p {
     color: #94a3b8;
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
 }
 .input-section {
-    background: #1e212b;
+    background: #181b21;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid #2a3142;
     width: 100%;
     max-width: 420px;
     margin-bottom: 40px;
@@ -52,26 +53,28 @@ body {
 .form-group label {
     display: block;
     color: #2cf2ed;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .form-group input {
     width: 100%;
     padding: 12px 15px;
-    background: #12141a;
+    background: #0f1115;
     border: 1px solid #334155;
     border-radius: 6px;
     color: #fff;
     font-family: 'Consolas', monospace;
     font-size: 16px;
     box-sizing: border-box;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 .form-group input:focus {
     border-color: #2cf2ed;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(44, 242, 237, 0.2);
+    box-shadow: 0 0 0 2px rgba(44, 242, 237, 0.1);
 }
 button {
     width: 100%;
@@ -79,50 +82,45 @@ button {
     background-color: #2cf2ed;
     color: #0f172a;
     border: none;
-    font-weight: 700;
-    font-size: 16px;
+    font-weight: 800;
+    font-size: 15px;
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 6px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    margin-top: 10px;
 }
 button:hover {
     background-color: #1ce0db;
-    box-shadow: 0 4px 15px rgba(44, 242, 237, 0.4);
     transform: translateY(-1px);
-}
-button:active {
-    transform: translateY(1px);
+    box-shadow: 0 4px 12px rgba(44, 242, 237, 0.2);
 }
 .results-section {
     display: none;
     width: 100%;
-    max-width: 700px;
+    max-width: 600px;
 }
 .table-container {
     margin-bottom: 30px;
     border-radius: 10px;
     overflow: hidden;
-    background: #1e212b;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    background: #181b21;
+    border: 1px solid #2a3142;
 }
 table {
     width: 100%;
     border-collapse: collapse;
 }
 th, td {
-    padding: 14px 15px;
+    padding: 12px 20px;
     text-align: left;
     border-bottom: 1px solid #2a3142;
-    border-right: 1px solid #2a3142;
-}
-th:last-child, td:last-child {
-    border-right: none;
 }
 th {
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
+    font-weight: 700;
 }
 td {
     font-family: 'Consolas', monospace;
@@ -135,34 +133,22 @@ td.right {
 tbody tr:nth-child(even) {
     background-color: rgba(255, 255, 255, 0.02);
 }
-.table-base { border-top: 4px solid #2cf2ed; }
-.table-base th { background: rgba(44, 242, 237, 0.1); color: #2cf2ed; }
+.table-base { border-top: 3px solid #2cf2ed; }
+.table-base th { background: rgba(44, 242, 237, 0.05); color: #2cf2ed; }
 .table-base td.right { color: #f8fafc; }
 
-.table-final { border-top: 4px solid #4ade80; }
-.table-final th { background: rgba(74, 222, 128, 0.1); color: #4ade80; }
+.table-final { border-top: 3px solid #4ade80; }
+.table-final th { background: rgba(74, 222, 128, 0.05); color: #4ade80; }
 .table-final td.ideal { color: #64748b; font-weight: normal; text-align: right; }
-.table-final td.base-dmg { color: #94a3b8; text-align: right; font-weight: bold; }
 .table-final td.actual { color: #4ade80; text-align: right; font-weight: bold; font-size: 16px; }
 
-.table-analysis { border-top: 4px solid #facc15; }
-.table-analysis th { background: rgba(250, 204, 21, 0.1); color: #facc15; }
-.table-analysis td { color: #fde047; }
-.table-analysis tr.section-head td {
-    background: rgba(250, 204, 21, 0.05);
-    color: #facc15;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 8px 15px;
-    border-bottom: 1px solid #423e18;
-}
-.table-analysis td.loss-value { color: #fca5a5; }
-.table-analysis td.gain-value { color: #4ade80; }
-
-tr:last-child td { border-bottom: none; }
+.table-analysis { border-top: 3px solid #facc15; }
+.table-analysis th { background: rgba(250, 204, 21, 0.05); color: #facc15; }
+.table-analysis td { color: #e2e8f0; }
+.table-analysis td.highlight { color: #facc15; font-weight: bold; }
+.table-analysis td.loss { color: #f87171; }
+.table-analysis td.gain { color: #4ade80; }
+.table-analysis td.metric-name { color: #94a3b8; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
 
 .error {
     color: #f87171;
@@ -174,6 +160,7 @@ tr:last-child td { border-bottom: none; }
     padding: 12px;
     background: rgba(248, 113, 113, 0.1);
     border-radius: 6px;
+    font-size: 14px;
 }
 </style>
 </head>
@@ -187,30 +174,30 @@ tr:last-child td { border-bottom: none; }
 <div class="input-section">
     <div id="error-msg" class="error"></div>
     <div class="form-group">
-        <label>Enter base firerate:</label>
-        <input type="text" id="b_fr" autocomplete="off">
+        <label>Base Firerate (Seconds)</label>
+        <input type="text" id="b_fr" autocomplete="off" placeholder="e.g. 0.1">
     </div>
     <div class="form-group">
-        <label>Enter base damage per shot:</label>
-        <input type="text" id="b_dmg" autocomplete="off">
+        <label>Base Damage (Per Shot)</label>
+        <input type="text" id="b_dmg" autocomplete="off" placeholder="e.g. 10">
     </div>
     <div class="form-group">
-        <label>Enter total firerate buff % (Leave empty for 0):</label>
-        <input type="text" id="fr_b" autocomplete="off">
+        <label>Firerate Buff % (Optional)</label>
+        <input type="text" id="fr_b" autocomplete="off" placeholder="e.g. 50">
     </div>
     <div class="form-group">
-        <label>Enter total damage buff % (Leave empty for 0):</label>
-        <input type="text" id="dmg_b" autocomplete="off">
+        <label>Damage Buff % (Optional)</label>
+        <input type="text" id="dmg_b" autocomplete="off" placeholder="e.g. 20">
     </div>
-    <button onclick="calculate()">CALCULATE</button>
+    <button onclick="calculate()">CALCULATE STATS</button>
 </div>
 
 <div class="results-section" id="results">
+    
     <div class="table-container table-base">
         <table>
             <thead>
-                <tr><th colspan="2">BASE STATS (No Buffs)</th></tr>
-                <tr><th>Metric</th><th class="right">Value</th></tr>
+                <tr><th colspan="2">Starting Stats (No Buffs)</th></tr>
             </thead>
             <tbody id="base-tbody"></tbody>
         </table>
@@ -219,12 +206,10 @@ tr:last-child td { border-bottom: none; }
     <div class="table-container table-final">
         <table>
             <thead>
-                <tr><th colspan="4">FINAL PERFORMANCE COMPARISON</th></tr>
                 <tr>
                     <th>Metric</th>
-                    <th class="right" style="color:#64748b;">IDEAL<br><span style="font-size:10px;font-weight:normal">(Full Buffs)</span></th>
-                    <th class="right" style="color:#94a3b8;">ACTUAL<br><span style="font-size:10px;font-weight:normal">(Base Dmg)</span></th>
-                    <th class="right" style="color:#4ade80;">ACTUAL<br><span style="font-size:10px;font-weight:normal">(Final)</span></th>
+                    <th class="right" style="color:#64748b;">Paper Stats (Ideal)</th>
+                    <th class="right">In-Game Stats (Actual)</th>
                 </tr>
             </thead>
             <tbody id="final-tbody"></tbody>
@@ -234,8 +219,7 @@ tr:last-child td { border-bottom: none; }
     <div class="table-container table-analysis">
         <table>
             <thead>
-                <tr><th colspan="2">ANALYSIS</th></tr>
-                <tr><th>Effectiveness Metric</th><th class="right">Value</th></tr>
+                <tr><th colspan="2">Deep Analysis</th></tr>
             </thead>
             <tbody id="analysis-tbody"></tbody>
         </table>
@@ -268,7 +252,7 @@ function calculate() {
     let dmg_b_str = parseInput(document.getElementById('dmg_b').value);
     
     if (!b_fr_str || !b_dmg_str) {
-        document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
+        document.getElementById('error-msg').innerText = "Please enter Base Firerate and Base Damage.";
         document.getElementById('error-msg').style.display = 'block';
         return;
     }
@@ -279,7 +263,7 @@ function calculate() {
     let dmg_b = dmg_b_str ? parseFloat(dmg_b_str) : 0.0;
     
     if (isNaN(b_fr) || isNaN(b_dmg) || isNaN(fr_b) || isNaN(dmg_b)) {
-        document.getElementById('error-msg').innerText = "Invalid Input\nPlease enter valid numbers.";
+        document.getElementById('error-msg').innerText = "Invalid numbers entered.";
         document.getElementById('error-msg').style.display = 'block';
         return;
     }
@@ -301,46 +285,42 @@ function calculate() {
     let fr_act = final_frames / 60;
     let sps_act = 1 / fr_act;
     
-    let dps_act_base_dmg = b_dmg * sps_act;
     let dps_act_final = final_dmg * sps_act;
     
-    let fr_inc_pct = 0;
-    if (b_sps_act > 0) {
-        fr_inc_pct = ((sps_act - b_sps_act) / b_sps_act) * 100;
-    }
-
     let dps_loss = dps_i_full - dps_act_final;
     let dps_loss_pct = 0;
     if (dps_i_full > 0) {
         dps_loss_pct = (dps_loss / dps_i_full) * 100;
     }
 
+    let efficiency = 100 - dps_loss_pct;
+    let efficiency_color = efficiency > 90 ? "#4ade80" : (efficiency > 75 ? "#facc15" : "#f87171");
+
     let total_dps_inc = 0;
     if (b_dps_act > 0) {
         total_dps_inc = ((dps_act_final - b_dps_act) / b_dps_act) * 100;
     }
 
+    let real_fr_buff = 0;
+    if (b_sps_act > 0) {
+        real_fr_buff = ((sps_act - b_sps_act) / b_sps_act) * 100;
+    }
+
     document.getElementById('base-tbody').innerHTML = 
-        "<tr><td>Base Firerate</td><td class='right'>" + b_fr.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Base Damage</td><td class='right'>" + b_dmg + "</td></tr>" +
-        "<tr><td>Ideal DPS</td><td class='right'>" + b_dps_i.toFixed(2) + "</td></tr>" +
-        "<tr><td>Actual Firerate</td><td class='right'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Actual DPS</td><td class='right'>" + b_dps_act.toFixed(2) + "</td></tr>";
+        "<tr><td class='metric-name'>Base Firerate</td><td class='right'>" + b_fr.toFixed(6) + "s</td></tr>" +
+        "<tr><td class='metric-name'>Base Damage</td><td class='right'>" + b_dmg + "</td></tr>" +
+        "<tr><td class='metric-name'>Base DPS (Actual)</td><td class='right'>" + b_dps_act.toFixed(2) + "</td></tr>";
 
     document.getElementById('final-tbody').innerHTML = 
-        "<tr><td>Firerate</td><td class='ideal'>" + fr_i.toFixed(6) + "s</td><td class='base-dmg'>" + fr_act.toFixed(6) + "s</td><td class='actual'>" + fr_act.toFixed(6) + "s</td></tr>" +
-        "<tr><td>Damage</td><td class='ideal'>" + final_dmg + "</td><td class='base-dmg'>" + b_dmg + "</td><td class='actual'>" + final_dmg + "</td></tr>" +
-        "<tr><td>DPS</td><td class='ideal'>" + dps_i_full.toFixed(2) + "</td><td class='base-dmg'>" + dps_act_base_dmg.toFixed(2) + "</td><td class='actual'>" + dps_act_final.toFixed(2) + "</td></tr>";
+        "<tr><td class='metric-name'>Firerate</td><td class='ideal'>" + fr_i.toFixed(6) + "s</td><td class='actual'>" + fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td class='metric-name'>Damage</td><td class='ideal'>" + final_dmg + "</td><td class='actual'>" + final_dmg + "</td></tr>" +
+        "<tr><td class='metric-name'>DPS</td><td class='ideal'>" + dps_i_full.toFixed(2) + "</td><td class='actual'>" + dps_act_final.toFixed(2) + "</td></tr>";
 
     document.getElementById('analysis-tbody').innerHTML = 
-        "<tr class='section-head'><td colspan='2'>CONFIGURATION</td></tr>" +
-        "<tr><td>Firerate Buff</td><td class='right'>" + fr_b.toFixed(1) + "%</td></tr>" +
-        "<tr><td>Damage Buff</td><td class='right'>" + dmg_b.toFixed(1) + "%</td></tr>" +
-        "<tr class='section-head'><td colspan='2'>REAL GAINS (vs Base)</td></tr>" +
-        "<tr><td>Real Firerate Increase</td><td class='right gain-value'>+" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
-        "<tr><td>Total DPS Increase</td><td class='right gain-value'>+" + total_dps_inc.toFixed(2) + "%</td></tr>" +
-        "<tr class='section-head'><td colspan='2'>ROF BUG IMPACT</td></tr>" +
-        "<tr><td>DPS Lost</td><td class='right loss-value'>-" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
+        "<tr><td class='metric-name'>True Firerate Buff</td><td class='right highlight'>+" + real_fr_buff.toFixed(2) + "% <span style='color:#64748b;font-weight:normal;font-size:12px'>(Input: " + fr_b + "%)</span></td></tr>" +
+        "<tr><td class='metric-name'>Total DPS Increase</td><td class='right gain'>+" + total_dps_inc.toFixed(2) + "%</td></tr>" +
+        "<tr><td class='metric-name'>Efficiency Rating</td><td class='right' style='color:" + efficiency_color + "'>" + efficiency.toFixed(2) + "%</td></tr>" +
+        "<tr><td class='metric-name'>DPS Lost to Bug</td><td class='right loss'>" + dps_loss.toFixed(2) + "</td></tr>";
 
     document.getElementById('results').style.display = 'block';
 }
