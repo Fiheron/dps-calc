@@ -128,26 +128,22 @@
     .results-section {
         display: none;
         width: 100%;
+        flex-direction: column;
+        gap: 20px;
         animation: fadeIn 0.4s ease-out;
     }
     
-    .buff-results {
+    .buff-stats-container {
         display: none;
-        flex-direction: column;
-        gap: 20px;
+        width: 100%;
     }
 
     .table-container {
-        margin-bottom: 20px;
         border-radius: 16px;
         overflow: hidden;
         background: var(--bg-panel);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    
-    .table-container:last-child {
-        margin-bottom: 0;
     }
 
     table {
@@ -246,7 +242,7 @@
             </table>
         </div>
 
-        <div id="buff-results-container" class="buff-results">
+        <div id="buff-stats-container" class="buff-stats-container">
             <div class="table-container table-final">
                 <table>
                     <thead>
@@ -256,16 +252,16 @@
                     <tbody id="final-tbody"></tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="table-container table-analysis">
-                <table>
-                    <thead>
-                        <tr><th colspan="2">EFFECTIVENESS ANALYSIS</th></tr>
-                        <tr><th>Metric</th><th class="right">Value</th></tr>
-                    </thead>
-                    <tbody id="analysis-tbody"></tbody>
-                </table>
-            </div>
+        <div class="table-container table-analysis">
+            <table>
+                <thead>
+                    <tr><th colspan="2">ANALYSIS</th></tr>
+                    <tr><th>Metric</th><th class="right">Value</th></tr>
+                </thead>
+                <tbody id="analysis-tbody"></tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -290,7 +286,7 @@ function getRobloxFrames(seconds) {
 function calculate() {
     let err = document.getElementById('error-msg');
     let res = document.getElementById('results');
-    let buffRes = document.getElementById('buff-results-container');
+    let buffStatsContainer = document.getElementById('buff-stats-container');
     
     let b_fr_str = parseInput(document.getElementById('b_fr').value);
     let b_dmg_str = parseInput(document.getElementById('b_dmg').value);
@@ -320,8 +316,13 @@ function calculate() {
     let b_fr_act = b_frames / 60;
     let b_sps_act = 1 / b_fr_act;
     let b_dps_act = b_dmg * b_sps_act;
-
     let b_sps_i = 1 / b_fr;
+
+    let b_dps_loss = b_dps_i - b_dps_act;
+    let b_dps_loss_pct = 0;
+    if (b_dps_i > 0) {
+        b_dps_loss_pct = (b_dps_loss / b_dps_i) * 100;
+    }
 
     document.getElementById('base-tbody').innerHTML = 
         "<tr><td>Firerate</td><td class='right ideal mono'>" + b_fr.toFixed(6) + "s</td><td class='right actual mono'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
@@ -359,12 +360,15 @@ function calculate() {
             "<tr><td>Real Firerate Increase</td><td class='right mono'>" + fr_inc_pct.toFixed(2) + "%</td></tr>" +
             "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value mono'>" + dps_loss.toFixed(2) + " (" + dps_loss_pct.toFixed(2) + "%)</td></tr>";
 
-        buffRes.style.display = 'flex';
+        buffStatsContainer.style.display = 'block';
     } else {
-        buffRes.style.display = 'none';
+        document.getElementById('analysis-tbody').innerHTML = 
+            "<tr><td>ROF Bug DPS Loss</td><td class='right loss-value mono'>" + b_dps_loss.toFixed(2) + " (" + b_dps_loss_pct.toFixed(2) + "%)</td></tr>";
+
+        buffStatsContainer.style.display = 'none';
     }
 
-    res.style.display = 'block';
+    res.style.display = 'flex';
 }
 
 document.getElementById('b_fr').addEventListener('input', calculate);
