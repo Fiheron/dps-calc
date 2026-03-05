@@ -311,12 +311,14 @@ function calculate() {
     
     err.style.display = 'none';
 
-    let b_dps_i = b_dmg / b_fr;
-    let b_frames = getRobloxFrames(b_fr);
+    let b_fr_capped = Math.max(0.02, b_fr);
+
+    let b_dps_i = b_dmg / b_fr_capped;
+    let b_frames = getRobloxFrames(b_fr_capped);
     let b_fr_act = b_frames / 60;
     let b_sps_act = 1 / b_fr_act;
     let b_dps_act = b_dmg * b_sps_act;
-    let b_sps_i = 1 / b_fr;
+    let b_sps_i = 1 / b_fr_capped;
 
     let b_dps_loss = b_dps_i - b_dps_act;
     let b_dps_loss_pct = 0;
@@ -325,12 +327,13 @@ function calculate() {
     }
 
     document.getElementById('base-tbody').innerHTML = 
-        "<tr><td>Firerate</td><td class='right ideal mono'>" + b_fr.toFixed(6) + "s</td><td class='right actual mono'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
+        "<tr><td>Firerate</td><td class='right ideal mono'>" + b_fr_capped.toFixed(6) + "s</td><td class='right actual mono'>" + b_fr_act.toFixed(6) + "s</td></tr>" +
         "<tr><td>Shots/sec</td><td class='right ideal mono'>" + b_sps_i.toFixed(2) + "</td><td class='right actual mono'>" + b_sps_act.toFixed(2) + "</td></tr>" +
         "<tr><td>DPS</td><td class='right ideal mono'>" + b_dps_i.toFixed(2) + "</td><td class='right actual mono'>" + b_dps_act.toFixed(2) + "</td></tr>";
 
     if (fr_b > 0) {
-        let fr_i = b_fr / (1 + fr_b / 100);
+        let fr_i_raw = b_fr / (1 + fr_b / 100);
+        let fr_i = Math.max(0.02, fr_i_raw);
         let sps_i = 1 / fr_i;
         let dps_i = b_dmg * sps_i;
         
